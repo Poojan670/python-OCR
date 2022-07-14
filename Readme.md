@@ -9,6 +9,8 @@
 
 ->_py -m venv env_
 
+-> _env/Scripts/activate_ ->activates virtual environment 
+
 ->_pip install -r requirements.txt_
 
 ->_Make sure that your tessaract.exe's relative location is set properly_
