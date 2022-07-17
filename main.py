@@ -52,7 +52,7 @@ def upload():
     try:
         path = filedialog.askopenfilename()
         image = Image.open(path)
-        image.thumbnail((256, 256))
+        image.thumbnail((720, 480))
         img = ImageTk.PhotoImage(image)
         uploaded_img.configure(image=img)
         uploaded_img.image = img
