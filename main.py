@@ -11,7 +11,7 @@ try:
     from tkinter import (Tk, Label,
                          Scrollbar, RIGHT,
                          filedialog, VERTICAL,
-                         Button, Y, messagebox
+                         Button, Y, messagebox, LEFT, BOTH, BOTTOM, X, NONE, END, TOP
                          )
     import tkinter as tk
 except ImportError:
@@ -26,6 +26,9 @@ except ImportError:
 # Pillow and Python-CV imports
 from PIL import ImageTk, Image
 import cv2
+
+# PyDF2 Package
+import PyPDF2
 
 
 class Window(tk.Frame):
@@ -47,7 +50,7 @@ class Window(tk.Frame):
         self.master.title('OCR' + str(default_screen))
 
 
-def upload():
+def upload_image():
     # Image Upload Module
     try:
         path = filedialog.askopenfilename()
@@ -59,6 +62,26 @@ def upload():
         show_extract_button(path)
     except AttributeError:
         error_msg("Error: Please provide an image")
+    except Exception as e:
+        sys.exit(str(e))
+
+
+def upload_pdf():
+    # Pdf Upload Module
+    try:
+        path = filedialog.askopenfilename()
+        pdf_file_obj = open(path, 'rb')
+        pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
+
+        text = ""
+        for page in pdf_reader.pages:
+            print(pdf_reader.pages)
+            text += page.extract_text() + "\n"
+            print(text)
+        scroll_Bar(text)
+
+    except AttributeError:
+        error_msg("Error: Please provide an File")
     except Exception as e:
         sys.exit(str(e))
 
@@ -113,6 +136,20 @@ def show_extract_button(path):
     extractBtn.pack()
 
 
+def scroll_Bar(text):
+    h = Scrollbar(root, orient='horizontal')
+    h.pack(side=BOTTOM, fill=X)
+    v = Scrollbar(root)
+    v.pack(side=RIGHT, fill=Y)
+    t = tk.Text(root, width=100, height=100, wrap=NONE,
+                xscrollcommand=h.set,
+                yscrollcommand=v.set)
+    t.insert(END, f"{text}\n")
+    t.pack(side=TOP, fill=X)
+    h.config(command=t.xview)
+    v.config(command=t.yview)
+
+
 # Python Main Module
 if __name__ == "__main__":
     root = Tk()
@@ -124,15 +161,18 @@ if __name__ == "__main__":
     root.title('OCR')
 
     newline = Label(root, font=('Times New Roman bold', 20))
-    scrollbar = Scrollbar(root, orient=VERTICAL)
-    scrollbar.pack(side=RIGHT, fill=Y)
 
     uploaded_img = Label(root)
 
     frame = Window(root)
 
     # Initial Upload Button
-    Button(root, text="Upload an image", command=upload, bg="#009AEE", fg="white", height=2, width=20, borderwidth=5,
+    Button(root, text="Upload an image", command=upload_image, bg="#000000", fg="white", height=2, width=15,
+           borderwidth=5,
+           font=('Times New Roman bold', 15, 'bold')).pack()
+    newline.configure(text='\n')
+    newline.pack()
+    Button(root, text="Upload an pdf", command=upload_pdf, bg="#000000", fg="white", height=2, width=15, borderwidth=5,
            font=('Times New Roman bold', 15, 'bold')).pack()
     newline.configure(text='\n')
     newline.pack()
